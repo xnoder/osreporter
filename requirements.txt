@@ -1,0 +1,3 @@
+requests==2.12.5
+requests-futures==0.9.7
+rethinkdb==2.3.0.post6
