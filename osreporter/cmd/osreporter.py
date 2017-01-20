@@ -1,6 +1,7 @@
 """
 Enable asyncronous HTTP requests.
 """
+import argparse
 import sys
 import time
 
@@ -11,12 +12,16 @@ from concurrent.futures import ThreadPoolExecutor
 from requests_futures.sessions import FuturesSession
 
 from osreporter.db import data
-from osreporter.db import writer
+from osreporter.db import rethinkdb
 from osreporter.http import headers
 from osreporter.openstack import authentication
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--db', help="Select the backend to write to.")
+    args = parser.parse_args()
+
     print("Collecting data from OpenStack: ", sep=' ', end='', file=sys.stdout, flush=False)
     # Authenticate against OpenStack
     auth = authentication.Authenticate().do(version=2)
@@ -40,7 +45,6 @@ def main():
 
     # Save the results.
     res_a = req_a.result(timeout=None)
-    print("\t[CALL] Servers HTTP/1.1 {0}: ".format(res_a.status_code), sep=' ', end='', file=sys.stdout, flush=False)
     if res_a.status_code != requests.codes.ok:
         print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=False)
         sys.exit(1)
@@ -48,7 +52,6 @@ def main():
         print("[DONE]", sep=' ', end='\n', file=sys.stdout, flush=False)
 
     res_b = req_b.result(timeout=None)
-    print("\t[CALL] Flavours HTTP/1.1 {0}: ".format(res_a.status_code), sep=' ', end='', file=sys.stdout, flush=False)
     if res_b.status_code != requests.codes.ok:
         print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=False)
         sys.exit(1)
@@ -56,7 +59,6 @@ def main():
         print("[DONE]", sep=' ', end='\n', file=sys.stdout, flush=False)
 
     res_c = req_c.result(timeout=None)
-    print("\t[CALL] Tenants HTTP/1.1 {0}: ".format(res_a.status_code), sep=' ', end='', file=sys.stdout, flush=False)
     if res_c.status_code != requests.codes.ok:
         print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=False)
         sys.exit(1)
@@ -64,7 +66,6 @@ def main():
         print("[DONE]", sep=' ', end='\n', file=sys.stdout, flush=False)
 
     res_d = req_d.result(timeout=None)
-    print("\t[CALL] Users HTTP/1.1 {0}: ".format(res_a.status_code), sep=' ', end='', file=sys.stdout, flush=False)
     if res_d.status_code != requests.codes.ok:
         print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=False)
         sys.exit(1)
@@ -72,7 +73,6 @@ def main():
         print("[DONE]", sep=' ', end='\n', file=sys.stdout, flush=False)
 
     res_e = req_e.result(timeout=None)
-    print("\t[CALL] Volumes HTTP/1.1 {0}: ".format(res_a.status_code), sep=' ', end='', file=sys.stdout, flush=False)
     if res_e.status_code != requests.codes.ok:
         print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=False)
         sys.exit(1)
@@ -85,7 +85,8 @@ def main():
     process = data.processor(res_c.json(), res_d.json(), res_a.json(), res_b.json(), res_e.json())
 
     # Write the data to the database
-    store = writer.writer(process)
+    if args.db is 'rethink':
+        store = rethinkdb.writer(process)
 
 
 if __name__ == "__main__":
