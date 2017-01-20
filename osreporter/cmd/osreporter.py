@@ -22,7 +22,6 @@ def main():
     parser.add_argument('--db', help="Select the backend to write to.")
     args = parser.parse_args()
 
-    print("Collecting data from OpenStack: ", sep=' ', end='', file=sys.stdout, flush=False)
     # Authenticate against OpenStack
     auth = authentication.Authenticate().do(version=2)
     tenant = auth["access"]["token"]["tenant"]["id"]
@@ -32,11 +31,8 @@ def main():
     session.headers.update(headers.common_headers(token))
 
     start_time = time.time()
-    print(start_time, sep=' ', end='\n', file=sys.stdout, flush=False)
-    print("Got a token [{0}] for tenant ID {1}".format(token, tenant), sep=' ', end='\n', file=sys.stdout, flush=False)
 
     # Asyncronous requests to the OpenStack API's.
-    print("Starting API request sequence...", sep=' ', end='\n', file=sys.stdout, flush=False)
     req_a = session.get("http://127.0.0.1:8774/v2/{0}/servers/detail?all_tenants=1".format(tenant))
     req_b = session.get("http://127.0.0.1:8774/v2/{0}/flavors/detail".format(tenant))
     req_c = session.get("http://127.0.0.1:35357/v2.0/tenants")
@@ -48,36 +44,26 @@ def main():
     if res_a.status_code != requests.codes.ok:
         print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=False)
         sys.exit(1)
-    else:
-        print("[DONE]", sep=' ', end='\n', file=sys.stdout, flush=False)
 
     res_b = req_b.result(timeout=None)
     if res_b.status_code != requests.codes.ok:
         print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=False)
         sys.exit(1)
-    else:
-        print("[DONE]", sep=' ', end='\n', file=sys.stdout, flush=False)
 
     res_c = req_c.result(timeout=None)
     if res_c.status_code != requests.codes.ok:
         print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=False)
         sys.exit(1)
-    else:
-        print("[DONE]", sep=' ', end='\n', file=sys.stdout, flush=False)
 
     res_d = req_d.result(timeout=None)
     if res_d.status_code != requests.codes.ok:
         print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=False)
         sys.exit(1)
-    else:
-        print("[DONE]", sep=' ', end='\n', file=sys.stdout, flush=False)
 
     res_e = req_e.result(timeout=None)
     if res_e.status_code != requests.codes.ok:
         print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=False)
         sys.exit(1)
-    else:
-        print("[DONE]", sep=' ', end='\n', file=sys.stdout, flush=False)
 
     end_time = (time.time() - start_time)
 
