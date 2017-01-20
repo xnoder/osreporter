@@ -1,9 +1,33 @@
 """
 Write data to RethinkDB.
 """
+import datetime
+
+import rethinkdb as r
+
 
 def writer(data):
-    sorted_list = sorted(data[0])
+    """Write data to RethinkDB."""
 
-    for point in sorted_list:
-        pass
+    conn = r.connect(host="localhost", port=28015, db="osreporter", auth_key=None, user='admin', password=None, timeout=20, ssl=dict(), _handshake_version=10)
+
+    for point in data:
+        r.table("usage").insert({
+            "created_at": datetime.datetime.now().isoformat(sep='T'),
+            "name": point[0],
+            "type": point[1],
+            "instances": point[3],
+            "vcpus": point[4],
+            "ram": point[5],
+            "storage_local": point[6],
+            "storage_shared": point[7],
+            "instance_states": {
+                "active": point[8],
+                "suspended": point[9],
+                "shutdown": point[10],
+                "error": point[11],
+                "other": point[12]
+            }
+        }).run(c=conn)
+
+    conn.close()

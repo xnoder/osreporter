@@ -7,7 +7,7 @@ from setuptools import find_packages, setup
 VERSION = imp.load_source('version', path.join('.', 'osreporter', 'version.py'))
 VERSION = VERSION.__version__
 
-REQUIRES = []
+REQUIRES = ['requests==2.12.5', 'requests-futures==0.9.7', 'rethinkdb==2.3.0.post6']
 
 setup(
     name='osreporter',

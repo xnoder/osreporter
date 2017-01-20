@@ -5,11 +5,14 @@ Authenticate against OpenStack's API's.
 import json
 import os
 import sys
+import time
 
-from osreporter import headers
+import requests
+
+from osreporter.http import headers
 
 
-class Authenicate(object):
+class Authenticate(object):
 
     def __init__(self):
         self.username = os.getenv("OS_USERNAME", default=None)
@@ -17,8 +20,7 @@ class Authenicate(object):
         self.tenant = os.getenv("OS_TENANT_NAME", default=None)
         self.url = os.getenv("OS_AUTH_URL", default=None)
 
-    @staticmethod
-    def v2_payload():
+    def v2_payload(self):
         payload = {
             "auth": {
                 "tenantName": self.tenant,
@@ -30,27 +32,27 @@ class Authenicate(object):
         }
         return payload
 
-    @staticmethod
-    def v3_payload():
+    def v3_payload(self):
         raise NotImplementedError
 
     def do(self, version=None):
         if version == 2:
-            payload = v2_payload()
+            payload = self.v2_payload()
 
         if version == 3:
-            payload = v3_payload()
+            payload = self.v3_payload()
 
         if not version:
             raise AttributeError
 
         start_time = time.time()
 
-        headers = headers.auth_headers()
-        requests = requests.post(url, data=json.dumps(payload), headers=headers.)
+        head = headers.auth_headers()
+        url = "{0}/tokens".format(self.url)
+        request = requests.post(url, data=json.dumps(payload), headers=head)
 
-        if requests.status_code != requests.codes.ok:
-            print("Error: %s", % str(requests.raise_for_status()),sep=' ', end='n', file=sys.stdout, flush=False)
+        if request.status_code != requests.codes.ok:
+            print("Error: {0}".format(str(requests.raise_for_status())),sep=' ', end='n', file=sys.stdout, flush=False)
             sys.exit(status=1)
 
         return request.json()
