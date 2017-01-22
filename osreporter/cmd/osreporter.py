@@ -12,6 +12,7 @@ from concurrent.futures import ThreadPoolExecutor
 from requests_futures.sessions import FuturesSession
 
 from osreporter.db import data
+from osreporter.db import elasticsearch
 from osreporter.db import rethinkdb
 from osreporter.http import headers
 from osreporter.openstack import authentication
@@ -71,8 +72,13 @@ def main():
     process = data.processor(res_c.json(), res_d.json(), res_a.json(), res_b.json(), res_e.json())
 
     # Write the data to the database
-    if args.db is 'rethink':
+    if 'rethink' in args.db:
+        print("Writing data to RethinkDB...", sep=' ', end='\n', file=sys.stdout, flush=False)
         store = rethinkdb.writer(process)
+
+    if 'elastic' in args.db:
+        print("Writing data to Elasticsearch...", sep=' ', end='\n', file=sys.stdout, flush=False)
+        store = elasticsearch.writer(process)
 
 
 if __name__ == "__main__":
