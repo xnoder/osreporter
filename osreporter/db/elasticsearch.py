@@ -16,7 +16,7 @@ def writer(data):
 
     for point in data:
         doc = {
-            "created_at": datetime.datetime.now(),
+            "created_at": datetime.datetime.now().isoformat(sep='T'),
             "name": point[0],
             "type": point[1],
             "instances": point[3],
