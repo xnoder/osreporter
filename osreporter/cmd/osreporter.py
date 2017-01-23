@@ -23,7 +23,7 @@ def main():
     # Read config
     config = yaml.read('/etc/osreporter.yaml')
     schema = config['openstack']['schema']
-    openstack_api = config['openstack']['address']
+    address = config['openstack']['address']
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--db', help="Select the backend to write to.")
