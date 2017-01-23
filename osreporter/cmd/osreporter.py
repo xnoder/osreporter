@@ -11,6 +11,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from requests_futures.sessions import FuturesSession
 
+from osreporter.config import yaml
 from osreporter.db import data
 from osreporter.db import elasticsearch
 from osreporter.db import rethinkdb
@@ -19,6 +20,11 @@ from osreporter.openstack import authentication
 
 
 def main():
+    # Read config
+    config = yaml.read('/etc/osreporter.yaml')
+    schema = config['openstack']['schema']
+    openstack_api = config['openstack']['address']
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--db', help="Select the backend to write to.")
     args = parser.parse_args()
@@ -34,11 +40,11 @@ def main():
     start_time = time.time()
 
     # Asyncronous requests to the OpenStack API's.
-    req_a = session.get("http://127.0.0.1:8774/v2/{0}/servers/detail?all_tenants=1".format(tenant))
-    req_b = session.get("http://127.0.0.1:8774/v2/{0}/flavors/detail".format(tenant))
-    req_c = session.get("http://127.0.0.1:35357/v2.0/tenants")
-    req_d = session.get("http://127.0.0.1:35357/v2.0/users")
-    req_e = session.get("http://127.0.0.1:8776/v1/{0}/volumes/detail?all_tenants=1".format(tenant))
+    req_a = session.get("{0}://{1}:8774/v2/{2}/servers/detail?all_tenants=1".format(schema, address, tenant))
+    req_b = session.get("{0}://{1}:8774/v2/{2}/flavors/detail".format(schema, address, tenant))
+    req_c = session.get("{0}://{1}:35357/v2.0/tenants".format(schema, address))
+    req_d = session.get("{0}://{1}:35357/v2.0/users".format(schema, address))
+    req_e = session.get("{0}://{1}:8776/v1/{2}/volumes/detail?all_tenants=1".format(schema, address, tenant))
 
     # Save the results.
     res_a = req_a.result(timeout=None)
