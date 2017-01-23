@@ -7,6 +7,8 @@ import sys
 
 import requests
 
+from osreporter.config import yaml
+
 
 def writer(data):
     """Write data to Elasticsearch."""
@@ -32,7 +34,14 @@ def writer(data):
         }
         result_sets += 1
 
-        request = requests.post("http://localhost:9200/osreporter/usage/", data=json.dumps(doc))
+        # Read in config
+        config = yaml.read('/etc/osreporter.yaml')
+        server = config['elastic']['server']
+        port = config['elastic']['port']
+        index = config['elastic']['index']
+        index_type = config['elastic']['type']
+
+        request = requests.post("http://{0}:{1}/{2}/{3}/".format(server, port, index, index_type), data=json.dumps(doc))
         print("Wrote {0} stats to Elastic [{1}]".format(point[0], request.status_code), sep=' ', end='\n', file=sys.stdout, flush=False)
         if request.status_code != 201:
             print("Error communicating with Elastic. Code was [{0}]".format(request.status_code), sep='\n')

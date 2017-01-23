@@ -1,6 +1,6 @@
-elasticsearch==5.1.0
 osreporter==0.1.0
 requests==2.12.5
 requests-futures==0.9.7
 rethinkdb==2.3.0.post6
+ruamel.yaml==0.13.10
 urllib3==1.20

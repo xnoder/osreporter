@@ -7,7 +7,12 @@ from setuptools import find_packages, setup
 VERSION = imp.load_source('version', path.join('.', 'osreporter', 'version.py'))
 VERSION = VERSION.__version__
 
-REQUIRES = ['requests==2.12.5', 'requests-futures==0.9.7', 'rethinkdb==2.3.0.post6']
+REQUIRES = [
+    'requests==2.12.5',
+    'requests-futures==0.9.7',
+    'rethinkdb==2.3.0.post6',
+    'ruamel.yaml==0.13.10'
+]
 
 setup(
     name='osreporter',
@@ -30,7 +35,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
     ],
-    keywords='openstack reporting rethinkdb http cloud',
+    keywords='openstack reporting rethinkdb elasticcloud http cloud',
     author='Paul Stevens',
     author_email='ps@xnode.co.za',
     url='https://xnode.co.za/',
