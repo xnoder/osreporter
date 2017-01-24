@@ -45,6 +45,8 @@ def main():
     req_c = session.get("{0}://{1}:35357/v2.0/tenants".format(schema, address))
     req_d = session.get("{0}://{1}:35357/v2.0/users".format(schema, address))
     req_e = session.get("{0}://{1}:8776/v1/{2}/volumes/detail?all_tenants=1".format(schema, address, tenant))
+    req_f = session.get("{0}://{1}:8774/v2/{2}/flavors/detail?is_public=None".format(schema, address))
+    req_g = session.get("{0}://{1}:8774/v2/{2}/images/detail".format(schema, address, tenant))
 
     # Save the results.
     res_a = req_a.result(timeout=None)
@@ -72,25 +74,35 @@ def main():
         print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=False)
         sys.exit(1)
 
+    res_f = req_f.result(timeout=None)
+    if res_f.status_code != requests.codes.ok:
+        print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=False)
+        sys.exit(1)
+
+    res_g = req_g.result(timeout=None)
+    if res_g.status_code != requests.codes.ok:
+        print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=False)
+        sys.exit(1)
+
     end_time = (time.time() - start_time)
 
     # Process the data into a nested list()
-    process = data.processor(res_c.json(), res_d.json(), res_a.json(), res_b.json(), res_e.json())
+    process = data.usage(res_c.json(), res_d.json(), res_a.json(), res_b.json(), res_e.json())
 
     # Write the data to the database
     if 'rethink' in args.db:
         print("Writing data to RethinkDB...", sep=' ', end='\n', file=sys.stdout, flush=False)
-        rethinkdb.writer(process)
+        rethinkdb.usage(process)
 
     if 'elastic' in args.db:
         print("Writing data to Elasticsearch...", sep=' ', end='\n', file=sys.stdout, flush=False)
-        elasticsearch.writer(process)
+        elasticsearch.usage(process)
 
     if 'merged' in args.db:
         print("Writing data to RethinkDB...", sep=' ', end='\n', file=sys.stdout, flush=False)
-        rethinkdb.writer(process)
+        rethinkdb.usage(process)
         print("Writing data to Elasticsearch...", sep=' ', end='n', file=sys.stdout, flush=False)
-        elasticsearch.writer(process)
+        elasticsearch.usage(process)
 
 
 if __name__ == "__main__":

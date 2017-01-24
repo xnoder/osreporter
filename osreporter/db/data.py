@@ -3,7 +3,7 @@ Process the data received from the OpenStack API's
 and prep for writing into RethinkDB.
 """
 
-def processor(tenants, users, instances, flavors, volumes):
+def usage(tenants, users, instances, flavors, volumes):
 
     tenant_list = list()
     for tenant in tenants["tenants"]:

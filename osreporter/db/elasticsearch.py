@@ -10,7 +10,7 @@ import requests
 from osreporter.config import yaml
 
 
-def writer(data):
+def usage(data):
     """Write data to Elasticsearch."""
     result_sets = 0
 

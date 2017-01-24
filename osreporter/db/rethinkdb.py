@@ -6,7 +6,7 @@ import datetime
 import rethinkdb as r
 
 
-def writer(data):
+def usage(data):
     """Write data to RethinkDB."""
 
     conn = r.connect(host="localhost", port=28015, db="osreporter", auth_key=None, user='admin', password=None, timeout=20, ssl=dict(), _handshake_version=10)
