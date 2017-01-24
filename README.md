@@ -1,5 +1,5 @@
 # osreporter
-A tool that pull in OpenStack data from the API's and then writes it to Elasticsearch or RethinkDB.
+A tool that pulls in OpenStack data from the API's and then writes it to Elasticsearch or RethinkDB. Or both.
 
 ## Config
 
@@ -30,6 +30,22 @@ By and large, I use this to visualize data within Kibana from an Elasticsearch s
 ```
 $ osreporter --db elastic
 ```
+
+If you'd rather write data to RethinkDB:
+
+```
+$ osreporter --db rethink
+```
+
+or you can send the data to both services:
+
+```
+$ osreporter --db merged
+```
+
+RethinkDB is where I normally store data to run against matplotlib, while Elastic + Kibana is good for
+dashboards and reporting purposes. I expect that most of my development into the future will focus on
+RethinkDB and matplotlib.
 
 ## Copyright
 

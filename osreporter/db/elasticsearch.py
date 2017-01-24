@@ -46,4 +46,3 @@ def writer(data):
         if request.status_code != 201:
             print("Error communicating with Elastic. Code was [{0}]".format(request.status_code), sep='\n')
             sys.exit(1)
-    print("Wrote {0} accounts to the Elastic database.".format(result_sets), sep=' ', end='\n', file=sys.stdout, flush=False)

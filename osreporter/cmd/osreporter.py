@@ -80,11 +80,17 @@ def main():
     # Write the data to the database
     if 'rethink' in args.db:
         print("Writing data to RethinkDB...", sep=' ', end='\n', file=sys.stdout, flush=False)
-        store = rethinkdb.writer(process)
+        rethinkdb.writer(process)
 
     if 'elastic' in args.db:
         print("Writing data to Elasticsearch...", sep=' ', end='\n', file=sys.stdout, flush=False)
-        store = elasticsearch.writer(process)
+        elasticsearch.writer(process)
+
+    if 'merged' in args.db:
+        print("Writing data to RethinkDB...", sep=' ', end='\n', file=sys.stdout, flush=False)
+        rethinkdb.writer(process)
+        print("Writing data to Elasticsearch...", sep=' ', end='n', file=sys.stdout, flush=False)
+        elasticsearch.writer(process)
 
 
 if __name__ == "__main__":
