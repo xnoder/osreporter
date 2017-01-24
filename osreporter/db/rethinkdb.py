@@ -31,3 +31,9 @@ def usage(data):
         }).run(c=conn)
 
     conn.close()
+
+
+def flavors(data):
+    """Write flavor data to RethinkDB."""
+    conn = r.connect(host="localhost", port=28015, db="osreporter", auth_key=None, user='admin', password=None, timeout=20, ssl=dict(), _handshake_version=10)
+    conn.close()
