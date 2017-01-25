@@ -95,14 +95,17 @@ def main():
     if 'elastic' in args.db:
         print("Writing data to Elasticsearch...", sep=' ', end='', file=sys.stdout, flush=False)
         elasticsearch.usage(usage_processor)
+        elasticsearch.flavors(flavor_processor)
         print("Done.", sep=' ', end='\n', file=sys.stdout, flush=False)
 
     if 'merged' in args.db:
         print("Writing data to RethinkDB...", sep=' ', end='', file=sys.stdout, flush=False)
         rethinkdb.usage(usage_processor)
+        rethinkdb.flavors(flavor_processor)
         print("Done.", sep=' ', end='\n', file=sys.stdout, flush=False)
         print("Writing data to Elasticsearch...", sep=' ', end='', file=sys.stdout, flush=False)
         elasticsearch.usage(usage_processor)
+        elasticsearch.flavors(flavor_processor)
         print("Done.", sep=' ', end='\n', file=sys.stdout, flush=False)
 
     if 'test' in args.db:
