@@ -11,8 +11,7 @@ from osreporter.config import yaml
 
 
 def usage(data):
-    """Write data to Elasticsearch."""
-    result_sets = 0
+    """Write data to Elastic."""
 
     for point in data:
         doc = {
@@ -32,7 +31,6 @@ def usage(data):
                 "other": point[12]
             }
         }
-        result_sets += 1
 
         # Read in config
         config = yaml.read('/etc/osreporter.yaml')
@@ -42,7 +40,30 @@ def usage(data):
         index_type = config['elastic']['type']
 
         request = requests.post("http://{0}:{1}/{2}/{3}/".format(server, port, index, index_type), data=json.dumps(doc))
-        print("Wrote {0} stats to Elastic [{1}]".format(point[0], request.status_code), sep=' ', end='\n', file=sys.stdout, flush=False)
+        if request.status_code != 201:
+            print("Error communicating with Elastic. Code was [{0}]".format(request.status_code), sep='\n')
+            sys.exit(1)
+
+
+def flavors(data):
+    """Write flavor data to Elastic."""
+    conn = r.connect(host="localhost", port=28015, db="osreporter", auth_key=None, user='admin', password=None, timeout=20, ssl=dict(), _handshake_version=10)
+
+    for key, value in data.items():
+        doc = {
+            "created_at": datetime.datetime.now().isoformat(sep='T'),
+            "flavor": key,
+            "total": value
+        }
+
+        # Read in config
+        config = yaml.read('/etc/osreporter.yaml')
+        server = config['elastic']['server']
+        port = config['elastic']['port']
+        index = config['elastic']['index']
+        index_type = "flavors"
+
+        request = requests.post("http://{0}:{1}/{2}/{3}/".format(server, port, index, index_type), data=json.dumps(doc))
         if request.status_code != 201:
             print("Error communicating with Elastic. Code was [{0}]".format(request.status_code), sep='\n')
             sys.exit(1)

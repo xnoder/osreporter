@@ -83,24 +83,30 @@ def main():
 
     # Process the data into a nested list()
     usage_processor = usage.process(res_c.json(), res_d.json(), res_a.json(), res_b.json(), res_e.json())
+    flavor_processor = flavors.process(res_a.json(), res_b.json())
 
     # Write the data to the database
     if 'rethink' in args.db:
-        print("Writing data to RethinkDB...", sep=' ', end='\n', file=sys.stdout, flush=False)
+        print("Writing data to RethinkDB...", sep=' ', end='', file=sys.stdout, flush=False)
         rethinkdb.usage(usage_processor)
+        rethinkdb.flavors(flavor_processor)
+        print("Done.", sep=' ', end='\n', file=sys.stdout, flush=False)
 
     if 'elastic' in args.db:
-        print("Writing data to Elasticsearch...", sep=' ', end='\n', file=sys.stdout, flush=False)
+        print("Writing data to Elasticsearch...", sep=' ', end='', file=sys.stdout, flush=False)
         elasticsearch.usage(usage_processor)
+        print("Done.", sep=' ', end='\n', file=sys.stdout, flush=False)
 
     if 'merged' in args.db:
-        print("Writing data to RethinkDB...", sep=' ', end='\n', file=sys.stdout, flush=False)
+        print("Writing data to RethinkDB...", sep=' ', end='', file=sys.stdout, flush=False)
         rethinkdb.usage(usage_processor)
-        print("Writing data to Elasticsearch...", sep=' ', end='n', file=sys.stdout, flush=False)
+        print("Done.", sep=' ', end='\n', file=sys.stdout, flush=False)
+        print("Writing data to Elasticsearch...", sep=' ', end='', file=sys.stdout, flush=False)
         elasticsearch.usage(usage_processor)
+        print("Done.", sep=' ', end='\n', file=sys.stdout, flush=False)
 
     if 'test' in args.db:
-        flavors.process(res_a.json(), res_b.json())
+        pass
 
 if __name__ == "__main__":
     main()
