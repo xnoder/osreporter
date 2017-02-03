@@ -47,8 +47,6 @@ def usage(data):
 
 def flavors(data):
     """Write flavor data to Elastic."""
-    conn = r.connect(host="localhost", port=28015, db="osreporter", auth_key=None, user='admin', password=None, timeout=20, ssl=dict(), _handshake_version=10)
-
     for key, value in data.items():
         doc = {
             "created_at": datetime.datetime.now().isoformat(sep='T'),
