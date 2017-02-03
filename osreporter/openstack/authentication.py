@@ -9,16 +9,19 @@ import time
 
 import requests
 
+from osreporter.config import yaml
 from osreporter.http import headers
 
 
 class Authenticate(object):
 
     def __init__(self):
-        self.username = os.getenv("OS_USERNAME", default=None)
-        self.password = os.getenv("OS_PASSWORD", default=None)
-        self.tenant = os.getenv("OS_TENANT_NAME", default=None)
-        self.url = os.getenv("OS_AUTH_URL", default=None)
+        # (PS) Not sure about any of this...
+        config = yaml.read('/etc/osreporter.yaml')
+        self.username = os.getenv("OS_USERNAME", default=config['credentials']['username'])
+        self.password = os.getenv("OS_PASSWORD", default=config['credentials']['password'])
+        self.tenant = os.getenv("OS_TENANT_NAME", default=config['credentials']['project'])
+        self.url = os.getenv("OS_AUTH_URL", default=config['credentials']['uri'])
 
     def v2_payload(self):
         payload = {
