@@ -41,6 +41,7 @@ def main():
     start_time = time.time()
 
     # Asyncronous requests to the OpenStack API's.
+    print("Calling API's...", sep='', end='', file=sys.stdout, flush=True)
     req_a = session.get("{0}://{1}:8774/v2/{2}/servers/detail?all_tenants=1".format(schema, address, tenant))
     req_b = session.get("{0}://{1}:8774/v2/{2}/flavors/detail?is_public=None".format(schema, address, tenant))
     req_c = session.get("{0}://{1}:35357/v2.0/tenants".format(schema, address))
@@ -51,62 +52,75 @@ def main():
     # Save the results.
     res_a = req_a.result(timeout=None)
     if res_a.status_code != requests.codes.ok:
-        print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=False)
+        print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=True)
         sys.exit(1)
 
     res_b = req_b.result(timeout=None)
     if res_b.status_code != requests.codes.ok:
-        print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=False)
+        print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=True)
         sys.exit(1)
 
     res_c = req_c.result(timeout=None)
     if res_c.status_code != requests.codes.ok:
-        print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=False)
+        print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=True)
         sys.exit(1)
 
     res_d = req_d.result(timeout=None)
     if res_d.status_code != requests.codes.ok:
-        print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=False)
+        print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=True)
         sys.exit(1)
 
     res_e = req_e.result(timeout=None)
     if res_e.status_code != requests.codes.ok:
-        print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=False)
+        print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=True)
         sys.exit(1)
 
     res_f = req_f.result(timeout=None)
     if res_f.status_code != requests.codes.ok:
-        print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=False)
+        print("Cannot get to API.", sep=' ', end='\n', file=sys.stdout, flush=True)
         sys.exit(1)
 
     end_time = (time.time() - start_time)
+    print("[DONE]. [{:.2f} seconds]".format(end_time), sep='', end='\n', file=sys.stdout, flush=True)
 
     # Process the data into a nested list()
+    print("Processing data...", sep=' ', end='', file=sys.stdout, flush=True)
+    start_time = time.time()
     usage_processor = usage.process(res_c.json(), res_d.json(), res_a.json(), res_b.json(), res_e.json())
     flavor_processor = flavors.process(res_a.json(), res_b.json())
+    end_time = (time.time() - start_time)
+    print("[DONE]. [{:.2f} seconds]".format(end_time), sep='', end='\n', file=sys.stdout, flush=True)
 
     # Write the data to the database
     if 'rethink' in args.db:
-        print("Writing data to RethinkDB...", sep=' ', end='', file=sys.stdout, flush=False)
+        start_time = time.time()
+        print("Writing data to RethinkDB...", sep=' ', end='', file=sys.stdout, flush=True)
         rethinkdb.usage(usage_processor)
         rethinkdb.flavors(flavor_processor)
-        print("Done.", sep=' ', end='\n', file=sys.stdout, flush=False)
+        end_time = (time.time() - start_time)
+        print("[DONE]. [{:.2f} seconds]".format(end_time), sep='', end='\n', file=sys.stdout, flush=True)
 
     if 'elastic' in args.db:
-        print("Writing data to Elasticsearch...", sep=' ', end='', file=sys.stdout, flush=False)
+        start_time = time.time()
+        print("Writing data to Elasticsearch...", sep=' ', end='', file=sys.stdout, flush=True)
         elasticsearch.usage(usage_processor)
         elasticsearch.flavors(flavor_processor)
-        print("Done.", sep=' ', end='\n', file=sys.stdout, flush=False)
+        end_time = (time.time() - start_time)
+        print("[DONE]. [{:.2f} seconds]".format(end_time), sep='', end='\n', file=sys.stdout, flush=True)
 
     if 'merged' in args.db:
-        print("Writing data to RethinkDB...", sep=' ', end='', file=sys.stdout, flush=False)
+        start_time = time.time()
+        print("Writing data to RethinkDB...", sep=' ', end='', file=sys.stdout, flush=True)
         rethinkdb.usage(usage_processor)
         rethinkdb.flavors(flavor_processor)
-        print("Done.", sep=' ', end='\n', file=sys.stdout, flush=False)
-        print("Writing data to Elasticsearch...", sep=' ', end='', file=sys.stdout, flush=False)
+        end_time = (time.time() - start_time)
+        print("[DONE]. [{:.2f} seconds]".format(end_time), sep='', end='\n', file=sys.stdout, flush=True)
+        start_time = time.time()
+        print("Writing data to Elasticsearch...", sep=' ', end='', file=sys.stdout, flush=True)
         elasticsearch.usage(usage_processor)
         elasticsearch.flavors(flavor_processor)
-        print("Done.", sep=' ', end='\n', file=sys.stdout, flush=False)
+        pend_time = (time.time() - start_time)
+        print("[DONE]. [{:.2f} seconds]".format(end_time), sep='', end='\n', file=sys.stdout, flush=True)
 
     if 'test' in args.db:
         pass
