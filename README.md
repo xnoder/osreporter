@@ -11,11 +11,6 @@ elastic:
   port: "9200"
   index: "osreporter"
   type: "usage"
-rethinkdb:
-  server: "127.0.0.1"
-  port: 0
-  database: "osreporter"
-  table: "usage"
 openstack:
   schema: "http"
   address: "127.0.0.1"
