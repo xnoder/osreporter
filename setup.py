@@ -11,7 +11,6 @@ REQUIRES = [
     'openpyxl==2.4.5',
     'requests==2.12.5',
     'requests-futures==0.9.7',
-    'rethinkdb==2.3.0.post6',
     'ruamel.yaml==0.13.10'
 ]
 

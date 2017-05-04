@@ -1,9 +1,9 @@
 # osreporter
-A tool that pulls in OpenStack data from the API's and then writes it to Elasticsearch or RethinkDB. Or both.
+A tool that pulls in OpenStack data from the API's and then writes it to Elasticsearch or Excel.
 
 ## Config
 
-You need a file called `/etc/osreporter.yaml` which looks like:
+You need a file called `~/.osreporter.yaml` which looks like:
 
 ```
 elastic:
@@ -21,7 +21,8 @@ openstack:
   address: "127.0.0.1"
 ```
 
-...obviously modifying the addresses for your own environment.
+...obviously modifying the addresses for your own environment. This can be overridden by
+supplying an environment variable called `OSREPORTER_CONFIG`.
 
 ## Usage
 
@@ -31,21 +32,14 @@ By and large, I use this to visualize data within Kibana from an Elasticsearch s
 $ osreporter --db elastic
 ```
 
-If you'd rather write data to RethinkDB:
+If you'd rather write data to Excel:
 
 ```
-$ osreporter --db rethink
+$ osreporter --db excel
 ```
 
-or you can send the data to both services:
-
-```
-$ osreporter --db merged
-```
-
-RethinkDB is where I normally store data to run against matplotlib, while Elastic + Kibana is good for
-dashboards and reporting purposes. I expect that most of my development into the future will focus on
-RethinkDB and matplotlib.
+Elastic is useful for creating dashboards on states and quantities, whereas Excel compatibility
+allows for some useful reporting.
 
 ## Copyright
 
