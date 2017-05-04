@@ -33,7 +33,7 @@ def usage(data):
         }
 
         # Read in config
-        config = yaml.read('/etc/osreporter.yaml')
+        self.config = yaml.read(os.getenv("OSREPORTER_CONFIG", default=os.path.join(os.path.expanduser('~'), "trellominer.yaml")))
         server = config['elastic']['server']
         port = config['elastic']['port']
         index = config['elastic']['index']

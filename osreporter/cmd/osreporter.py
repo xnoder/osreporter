@@ -2,6 +2,7 @@
 Enable asyncronous HTTP requests.
 """
 import argparse
+import os
 import sys
 import time
 
@@ -13,7 +14,7 @@ from requests_futures.sessions import FuturesSession
 
 from osreporter.config import yaml
 from osreporter.db import elasticsearch
-from osreporter.db import rethinkdb
+from osreporter.db import excel
 from osreporter.http import headers
 from osreporter.openstack import authentication
 from osreporter.processing import flavors
@@ -22,7 +23,7 @@ from osreporter.processing import usage
 
 def main():
     # Read config
-    config = yaml.read('/etc/osreporter.yaml')
+    config = yaml.read(os.getenv("OSREPORTER_CONFIG", default=os.path.join(os.path.expanduser('~'), ".osreporter.yaml")))
     schema = config['openstack']['schema']
     address = config['openstack']['address']
 
@@ -92,14 +93,6 @@ def main():
     print("[DONE]. [{:.2f} seconds]".format(end_time), sep='', end='\n', file=sys.stdout, flush=True)
 
     # Write the data to the database
-    if 'rethink' in args.db:
-        start_time = time.time()
-        print("Writing data to RethinkDB...", sep=' ', end='', file=sys.stdout, flush=True)
-        rethinkdb.usage(usage_processor)
-        rethinkdb.flavors(flavor_processor)
-        end_time = (time.time() - start_time)
-        print("[DONE]. [{:.2f} seconds]".format(end_time), sep='', end='\n', file=sys.stdout, flush=True)
-
     if 'elastic' in args.db:
         start_time = time.time()
         print("Writing data to Elasticsearch...", sep=' ', end='', file=sys.stdout, flush=True)
@@ -108,18 +101,12 @@ def main():
         end_time = (time.time() - start_time)
         print("[DONE]. [{:.2f} seconds]".format(end_time), sep='', end='\n', file=sys.stdout, flush=True)
 
-    if 'merged' in args.db:
+    if 'excel' in args.db:
         start_time = time.time()
-        print("Writing data to RethinkDB...", sep=' ', end='', file=sys.stdout, flush=True)
-        rethinkdb.usage(usage_processor)
-        rethinkdb.flavors(flavor_processor)
+        print("Writing data to Excel...", sep=' ', end='', file=sys.stdout, flush=True)
+        excel.usage(usage_processor)
+        excel.flavors(flavor_processor)
         end_time = (time.time() - start_time)
-        print("[DONE]. [{:.2f} seconds]".format(end_time), sep='', end='\n', file=sys.stdout, flush=True)
-        start_time = time.time()
-        print("Writing data to Elasticsearch...", sep=' ', end='', file=sys.stdout, flush=True)
-        elasticsearch.usage(usage_processor)
-        elasticsearch.flavors(flavor_processor)
-        pend_time = (time.time() - start_time)
         print("[DONE]. [{:.2f} seconds]".format(end_time), sep='', end='\n', file=sys.stdout, flush=True)
 
     if 'test' in args.db:
