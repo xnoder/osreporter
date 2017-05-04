@@ -73,13 +73,25 @@ def usage(data):
         ws["G{0}".format(current_row)] = point[7]
         ws["H{0}".format(current_row)] = point[8]
         ws["I{0}".format(current_row)] = point[9]
+        if point[9] > 0:
+            ws["I{0}".format(current_row)].style = 'Neutral'
+        else:
+            ws["I{0}".format(current_row)].style = 'Good'
         ws["J{0}".format(current_row)] = point[10]
+        if point[10] > 0:
+            ws["J{0}".format(current_row)].style = 'Bad'
+        else:
+            ws["J{0}".format(current_row)].style = 'Good'
         ws["K{0}".format(current_row)] = point[11]
         if point[11] > 0:
             ws["K{0}".format(current_row)].style = 'Bad'
         else:
             ws["K{0}".format(current_row)].style = 'Good'
         ws["L{0}".format(current_row)] = point[12]
+        if point[12] > 0:
+            ws["L{0}".format(current_row)].style = 'Neutral'
+        else:
+            ws["L{0}".format(current_row)].style = 'Good'
         current_row += 1
 
     filename = os.path.join(os.path.expanduser('~'), "CVM Usage Report {0}.xlsx".format(datetime.now().strftime("%Y-%m-%d")))
